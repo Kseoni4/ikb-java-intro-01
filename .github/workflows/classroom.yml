@@ -8,12 +8,15 @@ on:
   workflow_dispatch:
 
 permissions:
+  checks: write
+  actions: read
   contents: read
 
 jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    if: github.actor != 'github-classroom[bot]'
 
     steps:
       - name: Checkout student code
@@ -30,6 +33,8 @@ jobs:
           server-password: ${{ secrets.ORG_ACCESS_TOKEN }}
 
       - name: Build and test with Maven
+        id: build-and-test-with-maven
+        uses: classroom-resources/autograding-command-grader@v1
         run: |
           # Создаем директорию .m2 и копируем настройки
           mkdir -p ~/.m2
@@ -41,9 +46,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.ORG_ACCESS_TOKEN }}
           GITHUB_ACTOR: ${{ github.actor }}
 
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v4
+      - name: Autograding Reporter
+        uses: classroom-resources/autograding-grading-reporter@v1
+        env:
+          BUILD-AND-TEST-WITH-MAVEN_RESULTS: "${{steps.build-and-test-with-maven.outputs.result}}"
         with:
-          name: test-results
-          path: target/surefire-reports/
+          runners: build-and-test-with-maven
