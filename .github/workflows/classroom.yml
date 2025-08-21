@@ -30,7 +30,16 @@ jobs:
           server-password: ${{ secrets.ORG_ACCESS_TOKEN }}
 
       - name: Build and test with Maven
-        run: mvn clean test --no-transfer-progress -B
+        run: |
+          # Создаем директорию .m2 и копируем настройки
+          mkdir -p ~/.m2
+          cp .github/.m2/settings.xml ~/.m2/settings.xml
+
+          # Запускаем тесты с явным указанием настроек
+          mvn clean test --no-transfer-progress -B --settings ~/.m2/settings.xml
+        env:
+          GITHUB_TOKEN: ${{ secrets.ORG_ACCESS_TOKEN }}
+          GITHUB_ACTOR: ${{ github.actor }}
 
       - name: Upload test results
         if: always()
