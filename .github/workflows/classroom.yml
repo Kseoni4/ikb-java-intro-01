@@ -8,15 +8,12 @@ on:
   workflow_dispatch:
 
 permissions:
-  checks: write
-  actions: read
   contents: read
 
 jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    if: github.actor != 'github-classroom[bot]'
 
     steps:
       - name: Checkout student code
@@ -43,3 +40,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.ORG_ACCESS_TOKEN }}
           GITHUB_ACTOR: ${{ github.actor }}
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: target/surefire-reports/
