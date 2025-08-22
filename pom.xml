@@ -30,7 +30,7 @@
         <dependency>
             <groupId>ch.kseno</groupId>
             <artifactId>intro-test-project</artifactId>
-            <version>1.0.2</version>
+            <version>1.0.3</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
